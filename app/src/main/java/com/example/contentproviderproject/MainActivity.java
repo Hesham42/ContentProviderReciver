@@ -27,14 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String AUTHORITY = "com.guinness.own.PROVIDER";
     private static final String BASE_PATH = "contacts";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
-    // Constant to identify the requested operation
-    private static final int CONTACTS = 1;
-    private static final int CONTACT_ID = 2;
-    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    static {
-        uriMatcher.addURI(AUTHORITY,BASE_PATH, CONTACTS);
-        uriMatcher.addURI(AUTHORITY,BASE_PATH + "/#",CONTACT_ID);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +52,5 @@ public class MainActivity extends AppCompatActivity {
             Contacts.add("Name: "+Name +"\n"+"Number :" + Number);
         }
         txv.setText(Contacts.toString()+"\n ");
-
-
     }
 }
