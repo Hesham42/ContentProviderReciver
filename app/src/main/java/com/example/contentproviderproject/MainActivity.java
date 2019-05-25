@@ -36,12 +36,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     private NotificationManagerCompat managerCompat;
     private CursorAdapter cursorAdapter;
     ArrayList<ModelPerson> Contacts;
-    boolean  flag = false;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private static final String CONTACT_NAME = "myName";
     private static final String CONTACT_AGE = "myAge";
     public static final String CONTACT_IDS = "_id";
-
+    boolean flag = false;
     private static final String AUTHORITY = "com.guinness.own.PROVIDER";
     private static final String BASE_PATH = "contacts";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
@@ -81,8 +80,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     @Override
     protected void onStart() {
         super.onStart();
-        AddNotification(FetchContact(),flag);
+        flag = true ;
+        AddNotification(FetchContact());
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (flag == true){
+
+        }else{
+
+            AddNotification(FetchContact());
+        }
     }
 
     private void restartLoader() {
@@ -124,13 +135,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     }
 
-    private void AddNotification(ArrayList<ModelPerson> contacts ,boolean b) {
-        if (b == false){
+    private void AddNotification(ArrayList<ModelPerson> contacts ) {
             int size = Contacts.size();
             if (size > 0) {
                 for (int i = 0; i < Contacts.size(); i++) {
                     if (i == Contacts.size() -1){
-                        flag = true;
                         Intent activeIntent = new Intent(this,MainActivity.class);
                         PendingIntent pendingIntent = PendingIntent.getActivity(
                                 this,
@@ -145,27 +154,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                                 .setContentIntent(pendingIntent)
+//                                .setAutoCancel(true)
                                 .build();
-                        notification.flags = Notification.FLAG_AUTO_CANCEL;
-                        managerCompat.notify(Contacts.get(i).getCONTACT_IDS(),notification);
 
-
+                                notification.flags = Notification.FLAG_AUTO_CANCEL;
+                                managerCompat.notify(Contacts.get(i).getCONTACT_IDS(),notification);
                     }
                 }
             }
         }
 
-    }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean("flag", flag);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-         flag = savedInstanceState.getBoolean("flag");
-        }
+
 
 }
