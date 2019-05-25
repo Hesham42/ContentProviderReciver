@@ -3,8 +3,10 @@ package com.example.contentproviderproject;
 import android.Manifest;
 import android.app.LoaderManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -33,7 +35,6 @@ import java.util.List;
 import static com.example.contentproviderproject.App.CHANEL_1_ID;
 
 public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<Cursor>{
-    private NotificationManagerCompat managerCompat;
     private CursorAdapter cursorAdapter;
     ArrayList<ModelPerson> Contacts;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
@@ -44,6 +45,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     private static final String AUTHORITY = "com.guinness.own.PROVIDER";
     private static final String BASE_PATH = "contacts";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
+
+
+//app notifcation
+    Intent activeIntent;
+    PendingIntent pendingIntent;
+    Notification notification;
+    NotificationManagerCompat managerCompat;
 
 
     // Constant to identify the requested operation
@@ -62,6 +70,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         managerCompat = NotificationManagerCompat.from(this);
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
         Contacts = new ArrayList<ModelPerson>();
         cursorAdapter = new ContactsCursorAdapter(this,null,0);
         ListView list = (ListView) findViewById(android.R.id.list);
@@ -84,6 +94,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         AddNotification(FetchContact());
 
     }
+
+
 
     @Override
     protected void onStop() {
@@ -140,14 +152,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
             if (size > 0) {
                 for (int i = 0; i < Contacts.size(); i++) {
                     if (i == Contacts.size() -1){
-                        Intent activeIntent = new Intent(this,MainActivity.class);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(
+                         activeIntent = new Intent(this,MainActivity.class);
+                         pendingIntent = PendingIntent.getActivity(
                                 this,
                                 0,
                                 activeIntent,
                                 0);
 
-                        Notification notification =  new
+                         notification =  new
                                 NotificationCompat.Builder(this,CHANEL_1_ID)
                                 .setSmallIcon(R.drawable.notifaction_24dp)
                                 .setContentTitle(Contacts.get(i).getCONTACT_NAME())
@@ -159,10 +171,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
                                 notification.flags = Notification.FLAG_AUTO_CANCEL;
                                 managerCompat.notify(Contacts.get(i).getCONTACT_IDS(),notification);
+//                        return contacts.get(i).getCONTACT_IDS();
                     }
+
                 }
             }
-        }
+
+
+    }
 
 
 
