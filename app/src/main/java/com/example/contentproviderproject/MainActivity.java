@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         cursorAdapter = new ContactsCursorAdapter(this,null,0);
         ListView list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(cursorAdapter);
-//        AddNotification(FetchContact(),flag);
         getLoaderManager().initLoader(0, null, this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -79,13 +78,19 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AddNotification(FetchContact(),flag);
+
+    }
 
     private void restartLoader() {
         getLoaderManager().restartLoader(0,null,this);
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,CONTENT_URI,null,null,null,CONTACT_IDS+"DESC");
+        return new CursorLoader(this,CONTENT_URI,null,null,null,CONTACT_IDS+"ASC");
     }
 
     @Override
@@ -99,7 +104,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         cursorAdapter.swapCursor(null);
 
     }
-    
+
     private  ArrayList<ModelPerson>  FetchContact(){
         String[] projection    = null;
         String selection = null;
@@ -120,12 +125,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     }
 
     private void AddNotification(ArrayList<ModelPerson> contacts ,boolean b) {
-        if (b ==false){
+        if (b == false){
             int size = Contacts.size();
             if (size > 0) {
                 for (int i = 0; i < Contacts.size(); i++) {
-                    if (i==0){
-                        flag=true;
+                    if (i == Contacts.size() -1){
+                        flag = true;
                         Intent activeIntent = new Intent(this,MainActivity.class);
                         PendingIntent pendingIntent = PendingIntent.getActivity(
                                 this,
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
                                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                                 .setContentIntent(pendingIntent)
                                 .build();
+                        notification.flags = Notification.FLAG_AUTO_CANCEL;
                         managerCompat.notify(Contacts.get(i).getCONTACT_IDS(),notification);
 
 
@@ -151,4 +157,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("flag", flag);
+        super.onSaveInstanceState(savedInstanceState);
     }
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+         flag = savedInstanceState.getBoolean("flag");
+        }
+
+}
