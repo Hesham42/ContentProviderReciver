@@ -24,9 +24,12 @@ public class MyBroadcastReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        String data = intent.getStringExtra("data");
+        String Name = intent.getStringExtra("Name");
+        String Age = intent.getStringExtra("Age");
+        String ID = intent.getStringExtra("ID");
+        int id = Integer.valueOf(ID);
+
         managerCompat = NotificationManagerCompat.from(context);
-        Toast.makeText(context,"Created Contact " + data,Toast.LENGTH_LONG).show();
         activeIntent = new Intent(context, MainActivity.class);
         pendingIntent = PendingIntent.getActivity(
                 context,
@@ -37,7 +40,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver
         notification = new
                 NotificationCompat.Builder(context, CHANEL_1_ID)
                 .setSmallIcon(R.drawable.notifaction_24dp)
-                .setContentTitle(data)
+                .setContentTitle(Name)
+                .setContentText(Age)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
@@ -45,7 +49,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver
                 .build();
 
         notification.flags = Notification.FLAG_AUTO_CANCEL;
-        managerCompat.notify(1, notification);
+        managerCompat.notify(id, notification);
 
     }
 }
